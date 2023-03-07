@@ -1,10 +1,12 @@
+
     begin
         dut : entity work.Arch
             port map(clk => CLK, 
                      FORCE_MEMORY_WRITE_ENABLE => FORCE_MEMORY_WRITE_ENABLE,
                      FORCE_MEMORY_WRITE_ADDRESS => FORCE_MEMORY_WRITE_ADDRESS,
                      FORCE_MEMORY_WRITE_DATA => FORCE_MEMORY_WRITE_DATA,
-                     FORCE_COUNTER_DISABLE => FORCE_COUNTER_DISABLE);
+                     FORCE_COUNTER_DISABLE => FORCE_COUNTER_DISABLE,
+                     PROGRAM_EXIT => PROGRAM_EXIT);
         CLK <= not CLK after 20 ns;
         
         stimuli : process begin
@@ -18,4 +20,12 @@
             FORCE_COUNTER_DISABLE <= '0';
             wait;
         end process;
+        
+        check : process is begin
+            while true loop
+                assert PROGRAM_EXIT = '0' report "Program terminated." severity failure;
+                wait for 1 ns;
+            end loop;
+        end process check;
+        
 end TB;
