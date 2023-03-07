@@ -22,16 +22,12 @@ def to_binary_string(num, digits):
 # Write the header to a given file.
 def write_header(file, filename):
     for line in open("text_files/header.txt", "r"):
-        if(line.replace("\n","").replace(" ", "") == "%PHNAME%"):
-            file.write(filename + "\n")
-            continue
-        file.write(line)
-    output_file.write("constant test : TEST_REC_ARRAY := (\n")
+        # Replace the placeholder name where needed and write the result
+        file.write(line.replace("%PHNAME%", filename))
     return
 
 # Write the footer to a given file.
 def write_footer(file):
-    output_file.write(comment + "\n);\n")
     for line in open("text_files/footer.txt", "r"):
         file.write(line)
     return
@@ -41,7 +37,7 @@ if __name__ == "__main__":
     filename = input("Enter file name: ")
     input_file = open(filename, "r")
     # create an output file to write to
-    output_file = open("output/" + filename.split(".")[0] + "_output.vhd", "w")
+    output_file = open("output/" + filename.split(".")[0] + ".vhd", "w")
     # line counter, starts at 0
     counter = 0
     # create dictionaries for registers and operations
@@ -56,9 +52,6 @@ if __name__ == "__main__":
 
 
     for line in input_file:
-        # handle newlines
-        if counter > 0 and not previous_was_comment:
-            output_file.write("," + comment + "\n")
         # handle instruction split
         line = line.upper()
         total = line.split(" ")
@@ -77,12 +70,14 @@ if __name__ == "__main__":
             current_output += register_dictionary.get(total[3]) + "0000000000000"
 
         # handles end-line comments
-        if len(total) > 4 and len(line.split("//")) > 1:
+        if len(line.split("//")) > 1:
             comment = "\t--" + str(line.split("//")[1].replace("\n", ""))
         else:
             comment = ""
         
         # writes the current line to the file
-        output_file.write("(\"11\", \"" + to_binary_string(counter, 11) + "\", \"" + current_output + "\")")
+        output_file.write("(\"11\", \"" + to_binary_string(counter, 11) + "\", \"" + current_output + "\"), " + comment + "\n")
         counter+=4
+    
+    output_file.write("(\"11\", \"" + to_binary_string(counter, 11) + "\", x\"FFFFFFFF\"));\t -- PROGRAM EXIT COMMAND.")
     write_footer(output_file)
