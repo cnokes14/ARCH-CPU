@@ -1,0 +1,49 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity multuN is generic(
+	N : INTEGER := 8);
+port(
+	A : IN STD_LOGIC_VECTOR(N-1 downto 0);
+	B : IN STD_LOGIC_VECTOR(N-1 downto 0);
+	Y : OUT STD_LOGIC_VECTOR(N-1 downto 0));
+end entity multuN;
+
+architecture Behavioral of multuN is
+	type arr is array(N-1 downto 0) of STD_LOGIC_VECTOR(N-1 downto 0);
+	signal and_arr : arr;
+	signal add_arr : arr := (others => (others => '0'));
+	signal bex_arr : arr;
+begin
+	and_generate : for i in 0 to N-1 generate
+	   bex_arr(i) <= (others => B(i));
+	   and_arr(i) <= A and bex_arr(i);
+	end generate and_generate;
+
+	Y(0) <= and_arr(0)(0);
+	MSB_adder : entity work.fullAdder port map(A => and_arr(N-1)(0), 
+	            B => add_arr(N-2)(N-1), C => '0', Sum => Y(N-1));
+	
+	addN_generate : for i in 2 to N-1 generate
+		upper_generate : if i = 2 generate
+			adderN : entity work.adderN generic map(width => N-1) port map(
+				A => and_arr(0)(N-1 downto 1), B => and_arr(1)(N-2 downto 0),
+				Sum => add_arr(1)(N-1 downto 1));
+		end generate upper_generate;
+		other_generate : if i > 2 generate
+			adderN : entity work.adderN generic map(width => N-i+1) port map(
+				A => add_arr(i-2)(N-1 downto i-1), B => and_arr(i-1)(N-i downto 0),
+				Sum => add_arr(i-1)(N-1 downto i-1));
+		end generate other_generate;
+		--bottom_generate : if i = N-1 generate
+	    -- adder : entity work.fullAdder 
+	    --             port map(A => add_arr(i-2)(i), B => and_arr(i-1)(0), C => '0',
+	    --                      Sum => add_arr(i-1)(i));
+		--end generate bottom_generate;
+	end generate addN_generate;
+	
+	output_generate : for i in 1 to N-2 generate
+	   Y(i) <= add_arr(i)(i);
+	end generate output_generate;
+end Behavioral;
