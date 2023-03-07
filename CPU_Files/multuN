@@ -36,11 +36,6 @@ begin
 				A => add_arr(i-2)(N-1 downto i-1), B => and_arr(i-1)(N-i downto 0),
 				Sum => add_arr(i-1)(N-1 downto i-1));
 		end generate other_generate;
-		--bottom_generate : if i = N-1 generate
-	    -- adder : entity work.fullAdder 
-	    --             port map(A => add_arr(i-2)(i), B => and_arr(i-1)(0), C => '0',
-	    --                      Sum => add_arr(i-1)(i));
-		--end generate bottom_generate;
 	end generate addN_generate;
 	
 	output_generate : for i in 1 to N-2 generate
