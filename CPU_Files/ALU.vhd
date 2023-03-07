@@ -25,7 +25,6 @@ architecture Behavioral of ALU is
     signal SRL_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal SLL_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal ADD_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
-    signal SUB_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal AND_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal OR_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal XOR_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
@@ -33,15 +32,19 @@ architecture Behavioral of ALU is
     signal NOR_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal NOT_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal MUL_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
+    signal ADD_SEL : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     
     begin
+    -- when OP(2) is high, addative operation will be subtraction;
+    -- if so, set the A input to its inverse and set the carry in to 1.
+    with Op(2) select
+        ADD_SEL <= NOT_OUT when '1',
+                   A when others;
+    
     -- COMPONENTS FOR ARITHMETIC UNITS
     ADDER : entity work.adderN 
             generic map(width => DATA_SIZE)
-            port map(A => A, B => B, Sum => ADD_OUT);
-    SUBBER : entity work.subN 
-             generic map(width => DATA_SIZE)
-             port map(A => A, B => B, Y => SUB_OUT);
+            port map(A => ADD_SEL, B => B, Cin => Op(2), Sum => ADD_OUT);
     SLL_COMP : entity work.sllN
             generic map (N => DATA_SIZE)
             port map ( A => A , SHIFT_AMT => B, Y => SLL_OUT);    
@@ -68,8 +71,7 @@ architecture Behavioral of ALU is
         Y <= SRA_OUT when "000000",
              SRL_OUT when "000001",
              SLL_OUT when "000010",
-             ADD_OUT when "000011",
-             SUB_OUT when "000100",
+             ADD_OUT when "000011" | "000100",
              MUL_OUT when "000101",
              AND_OUT when "100000",
              OR_OUT when "100001",
