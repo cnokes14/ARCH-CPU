@@ -1,0 +1,21 @@
+// **********************************************
+// INDEX = 10
+// NUM = 0
+// do{
+// 	num += index
+// 	index--
+// } while num >= 0
+// **********************************************
+ADDI $R0 $R1 #10  //0 R1 = INDEX = 10
+ADDI $R0 $R2 #0   //4 R2 = NUM = 0
+// **********************************************
+// LABEL : POST-LOOP
+// **********************************************
+ADDR $R1 $R2 $R2  //8 R2 = R1 + R2 (NUM = NUM + INDEX)
+SUBI $R1 $R1 #1   //12 R1 -= 1 (INDEX = INDEX - 1)
+BNIN $R0 $R0 #24  //16 Branch to post-processor if INDEX < 0
+BUIN $R0 $R0 #8   //20 Otherwise, branch back to top of loop.
+// **********************************************
+// LABEL : POST-LOOP
+// **********************************************
+ADDI $R0 $R3 #20 //24 R3 = 20, just to show completion.

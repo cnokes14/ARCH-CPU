@@ -1,0 +1,27 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity 
+%PHNAME%
+is 
+end 
+%PHNAME%
+;
+
+architecture TB of 
+%PHNAME%
+is
+    signal CLK : STD_LOGIC := '0';
+    signal FORCE_MEMORY_WRITE_ENABLE : STD_LOGIC_VECTOR(1 downto 0);
+    signal FORCE_MEMORY_WRITE_ADDRESS : STD_LOGIC_VECTOR(10 downto 0);
+    signal FORCE_MEMORY_WRITE_DATA : STD_LOGIC_VECTOR(31 downto 0);
+    signal FORCE_COUNTER_DISABLE : STD_LOGIC := '1'; 
+    
+    type TEST_REC is record
+        FORCE_MEMORY_WRITE_ENABLE : STD_LOGIC_VECTOR(1 downto 0);
+        FORCE_MEMORY_WRITE_ADDRESS : STD_LOGIC_VECTOR(10 downto 0);
+        FORCE_MEMORY_WRITE_DATA : STD_LOGIC_VECTOR(31 downto 0);
+    end record TEST_REC;
+    
+    type TEST_REC_ARRAY is array(integer range<>) of TEST_REC;

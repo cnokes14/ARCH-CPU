@@ -1,0 +1,9 @@
+// MOVE 80 TO R2
+// MOVE 1 to R1
+// STORE R2 AT [20] + R1
+// LOAD [20] TO R3
+ADDI $R0 $R2 #80     // Line 00
+ADDI $R0 $R1 #1      // Line 04
+SRIW $R1 $R2 #20     // Line 08
+ADDI $R1 $R1 #1      // Line 12
+LRIR $R1 $R3 #20     // Line 16

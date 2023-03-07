@@ -1,0 +1,21 @@
+    begin
+        dut : entity work.Arch
+            port map(clk => CLK, 
+                     FORCE_MEMORY_WRITE_ENABLE => FORCE_MEMORY_WRITE_ENABLE,
+                     FORCE_MEMORY_WRITE_ADDRESS => FORCE_MEMORY_WRITE_ADDRESS,
+                     FORCE_MEMORY_WRITE_DATA => FORCE_MEMORY_WRITE_DATA,
+                     FORCE_COUNTER_DISABLE => FORCE_COUNTER_DISABLE);
+        CLK <= not CLK after 20 ns;
+        
+        stimuli : process begin
+            for i in test'range loop
+                FORCE_MEMORY_WRITE_ENABLE <= test(i).FORCE_MEMORY_WRITE_ENABLE;
+                FORCE_MEMORY_WRITE_ADDRESS <= test(i).FORCE_MEMORY_WRITE_ADDRESS;
+                FORCE_MEMORY_WRITE_DATA <= test(i).FORCE_MEMORY_WRITE_DATA;
+                wait for 40 ns;
+            end loop;
+            wait until clk = '0';
+            FORCE_COUNTER_DISABLE <= '0';
+            wait;
+        end process;
+end TB;

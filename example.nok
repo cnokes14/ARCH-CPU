@@ -1,0 +1,26 @@
+// AUTHOR: CHRISTOPHER NOKES
+// DESCRIPTION: Basic file to demonstrate initial capabilities
+//              of the CPU and adjacent language; sum the first 
+//              10 numbers from 210 to 225, store in memory from addresses 
+//              60 to 120
+// R1 = 210 (value)
+// R2 = 0 (total)
+// R3 = 60 (index)
+// R2 = R2 + R1
+// STORE R2 AT R3
+// R3 += 4
+// NUM += 1
+// SUB 226 FROM R1
+// IF ZERO, GOTO END
+// ELSE, LOOP
+ADDI $R0 $R1 #210 // Line 000 - R1 = 210
+ADDI $R0 $R2 #0   // Line 004 - R2 = 0
+ADDI $R0 $R3 #60  // Line 008 - R3 = 60
+ADDR $R2 $R1 $R2  // Line 012 - R2 = R2 + R1
+SRIW $R3 $R2 #0   // Line 016 - MEM[R3] = R2
+ADDI $R3 $R3 #4   // Line 020 - R3+=4
+ADDI $R1 $R1 #1   // Line 024 - R1++
+SUBI $R1 $R0 #226 // Line 028 - Compare R1 to 226
+BZIN $R0 $R0 #40  // Line 032 - Branch to 40 if 0.
+BUIN $R0 $R0 #12  // Line 036 - Branch to 12 for loop.
+ADDI $R0 $R6 #99  // Line 040 - Load 99 into R6, showing completion.
