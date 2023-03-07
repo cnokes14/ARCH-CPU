@@ -11,12 +11,10 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity ALU is
 GENERIC (
-    DATA_SIZE : INTEGER := 32;
-    SHIFT_DIGITS : INTEGER := 6
+    DATA_SIZE : INTEGER := 32
 );
 PORT(
-    A : IN std_logic_vector (DATA_SIZE-1 downto 0) ;
-    B : IN std_logic_vector (DATA_SIZE-1 downto 0) ;
+    A, B : IN std_logic_vector (DATA_SIZE-1 downto 0);
     OP : IN std_logic_vector(5 downto 0);
     Y : OUT std_logic_vector (DATA_SIZE-1 downto 0)
     );
@@ -34,6 +32,7 @@ architecture Behavioral of ALU is
     signal NAND_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal NOR_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     signal NOT_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
+    signal MUL_OUT : STD_LOGIC_VECTOR(DATA_SIZE-1 downto 0);
     
     begin
     -- COMPONENTS FOR ARITHMETIC UNITS
@@ -44,14 +43,17 @@ architecture Behavioral of ALU is
              generic map(width => DATA_SIZE)
              port map(A => A, B => B, Y => SUB_OUT);
     SLL_COMP : entity work.sllN
-            generic map (N => DATA_SIZE, M => SHIFT_DIGITS)
-            port map ( A => A , SHIFT_AMT => B(SHIFT_DIGITS-1 downto 0), Y => SLL_OUT);    
+            generic map (N => DATA_SIZE)
+            port map ( A => A , SHIFT_AMT => B, Y => SLL_OUT);    
     SRL_COMP : entity work.srlN
-            generic map ( N => DATA_SIZE , M => SHIFT_DIGITS)
-            port map ( A => A , SHIFT_AMT => B(SHIFT_DIGITS-1 downto 0), Y => SRL_OUT); 
+        generic map ( N => DATA_SIZE)
+        port map ( A => A , SHIFT_AMT => B, Y => SRL_OUT); 
     SRA_COMP : entity work.sraN
-            generic map ( N => DATA_SIZE , M => SHIFT_DIGITS)
-            port map ( A => A , SHIFT_AMT => B(SHIFT_DIGITS-1 downto 0), Y => SRA_OUT); 
+        generic map ( N => DATA_SIZE )
+        port map ( A => A , SHIFT_AMT => B, Y => SRA_OUT); 
+    MULTU : entity work.multuN
+        generic map(N => DATA_SIZE)
+        port map(A => A, B => B, Y => MUL_OUT);
     
     -- GATES FOR LOGIC UNITS
     AND_OUT <= A and B;
@@ -68,10 +70,11 @@ architecture Behavioral of ALU is
              SLL_OUT when "000010",
              ADD_OUT when "000011",
              SUB_OUT when "000100",
+             MUL_OUT when "000101",
              AND_OUT when "100000",
              OR_OUT when "100001",
              XOR_OUT when "100010",
              NAND_OUT when "100011",
              NOR_OUT when "100100",
-             NOT_OUT when OTHERS;
+             NOT_OUT when OTHERS; -- 100101
 end Behavioral;
