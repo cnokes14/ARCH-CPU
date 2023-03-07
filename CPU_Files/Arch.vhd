@@ -25,7 +25,8 @@ PORT(
     FORCE_MEMORY_WRITE_ENABLE : IN STD_LOGIC_VECTOR(1 downto 0);
     FORCE_MEMORY_WRITE_ADDRESS : IN STD_LOGIC_VECTOR(MEMORY_WIDTH-1 downto 0);
     FORCE_MEMORY_WRITE_DATA : IN STD_LOGIC_VECTOR(REGISTER_WIDTH-1 downto 0);
-    FORCE_COUNTER_DISABLE : IN STD_LOGIC
+    FORCE_COUNTER_DISABLE : IN STD_LOGIC;
+    PROGRAM_EXIT : OUT STD_LOGIC := '0'
 );
 end Arch;
 
@@ -118,8 +119,7 @@ architecture Behavioral of Arch is
                      
         -- DEFINE ALU ENTITY
         ALU : entity work.ALU
-            generic map(DATA_SIZE => REGISTER_WIDTH,
-                        SHIFT_DIGITS => 6)
+            generic map(DATA_SIZE => REGISTER_WIDTH)
             port map(A => REGISTER_READ_1,
                      B => ALU_INPUT_B_SELECT_OUTPUT,
                      OP => ALU_FUNCTION,
@@ -169,5 +169,8 @@ architecture Behavioral of Arch is
             MEMORY_WRITE_ENABLE_INCLUDE_FORCE <= FORCE_MEMORY_WRITE_ENABLE when '1',
                                                  MEMORY_WRITE_ENABLE when OTHERS;
         
-            
+        -- If the closing instruction is read, launch the program exit file.
+        with INSTRUCTION_DATA select
+            PROGRAM_EXIT <= '1' when x"FFFFFFFF",
+                            '0' when others;
 end Behavioral;
