@@ -18,10 +18,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity sraN is
-	GENERIC ( N : INTEGER := 4; -- bit width
-		      M : INTEGER := 2); -- shift bits
+	GENERIC ( N : INTEGER := 4); -- bit width
 	PORT ( A : IN std_logic_vector (N - 1 downto 0) ;
-	       SHIFT_AMT : IN std_logic_vector (M - 1 downto 0) ;
+	       SHIFT_AMT : IN std_logic_vector (N - 1 downto 0) ;
 	       Y : OUT std_logic_vector (N - 1 downto 0)
 	);
 end sraN;
@@ -38,6 +37,11 @@ begin
 			aSRA ( i ) (N-1 downto N-i) <= ( others => A(N-1)) ;
 		end generate left_fill;
 	end generate generateSRL;
-	Y <= aSRA ( to_integer ( unsigned ( SHIFT_AMT ) ) ) when
-		      ( to_integer ( unsigned ( SHIFT_AMT ) ) < N) else ( others => A(N-1));
+	
+	out_set : process (aSRA, SHIFT_AMT, A) is begin
+	   if to_integer(unsigned(SHIFT_AMT)) > N-1 or to_integer(unsigned(SHIFT_AMT)) < 0 then
+	       Y <= (others => '0');
+	   else Y <= aSRA(to_integer(unsigned(SHIFT_AMT)));
+	   end if;
+    end process out_set;
 end behavioral;
